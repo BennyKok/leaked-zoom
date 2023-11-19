@@ -1,21 +1,21 @@
-'use client';
-import { Toaster, toast } from 'sonner';
+"use client";
+import { Toaster, toast } from "sonner";
 
-import { Message, useChat } from 'ai/react';
-import { getAIReplyWithEmotion, useAvatar } from '@avatechai/avatars/react';
-import { ThreeJSPlugin } from '@avatechai/avatars/threejs';
-import Image from 'next/image';
+import { Message, useChat } from "ai/react";
+import { getAIReplyWithEmotion, useAvatar } from "@avatechai/avatars/react";
+import { ThreeJSPlugin } from "@avatechai/avatars/threejs";
+import Image from "next/image";
 import {
   GraphBlendshapesService,
   nodeConfigs,
-} from '@avatechai/avatars/blendshapes';
-import { useEffect, useRef, useState } from 'react';
+} from "@avatechai/avatars/blendshapes";
+import { useEffect, useRef, useState } from "react";
 import {
   useChatWithRebyte,
   useChatWithRebyte2,
   useContextStore,
-} from './component/useChatWithRebyte';
-import { FaEllipsis } from 'react-icons/fa6';
+} from "./component/useChatWithRebyte";
+import { FaEllipsis } from "react-icons/fa6";
 
 const GlobleBlendshapeService = new GraphBlendshapesService(nodeConfigs);
 const GlobleBlendshapeService2 = new GraphBlendshapesService(nodeConfigs);
@@ -68,7 +68,7 @@ export default function Home() {
   const audioSourceNode2 = useRef<AudioBufferSourceNode>();
   const audioSourceNode3 = useRef<AudioBufferSourceNode>();
 
-  const { setTopic, topic } = useContextStore();
+  const { setTopic, topic, numberOfAgent, setNumberOfAgent } = useContextStore();
 
   const [initAvatar1, setInitAvatar1] = useState(false);
   const [initAvatar2, setInitAvatar2] = useState(false);
@@ -79,35 +79,36 @@ export default function Home() {
   const audioContextRef3 = useRef<AudioContext>();
 
   const [audioStatus, setAudioStatus] = useState<
-    'Preparing' | 'Playing' | 'Ended'
-  >('Ended');
+    "Preparing" | "Playing" | "Ended"
+  >("Ended");
   const [audioStatus2, setAudioStatus2] = useState<
-    'Preparing' | 'Playing' | 'Ended'
-  >('Ended');
+    "Preparing" | "Playing" | "Ended"
+  >("Ended");
   const [audioStatus3, setAudioStatus3] = useState<
-    'Preparing' | 'Playing' | 'Ended'
-  >('Ended');
+    "Preparing" | "Playing" | "Ended"
+  >("Ended");
 
   const [userLoad, setUserLoad] = useState(false);
   const [assistantLoad, setAssistantLoad] = useState(false);
+  const [steveLoad, setSteveLoad] = useState(false);
 
   const {
     chatRebyte: append,
     isLoading,
     text: message1,
-  } = useChatWithRebyte2('1');
+  } = useChatWithRebyte2("1");
 
   const {
     chatRebyte: append2,
     isLoading: isLoading2,
     text: message2,
-  } = useChatWithRebyte2('2');
+  } = useChatWithRebyte2("2");
 
   const {
     chatRebyte: append3,
     isLoading: isLoading3,
     text: message3,
-  } = useChatWithRebyte2('3');
+  } = useChatWithRebyte2("3");
 
   const [allMessage, setAllMessage] = useState<ChatGPTMessage[]>([]);
   const [character1Message, setCharacter1Message] = useState<ChatGPTMessage>();
@@ -143,7 +144,7 @@ export default function Home() {
     avatarLoaders: [ThreeJSPlugin],
     scale: 1.22,
     // Style Props
-    className: 'w-[400px] !h-[400px]',
+    className: "w-[400px] !h-[400px]",
     onAvatarLoaded: () => {
       setInitAvatar1(true);
     },
@@ -154,12 +155,12 @@ export default function Home() {
     connectAudioContext: connectAudioContext2,
     connectAudioNode: connectAudioNode2,
   } = useAvatar({
-    avatarId: '9bcd4906-2439-441d-af31-f01c31db66a4',
+    avatarId: "9bcd4906-2439-441d-af31-f01c31db66a4",
     // Loader + Plugins
     avatarLoaders: [ThreeJSPlugin],
     scale: 0,
     // Style Props
-    className: 'w-[400px] !h-[400px]',
+    className: "w-[400px] !h-[400px]",
     onAvatarLoaded: () => {
       setInitAvatar2(true);
     },
@@ -171,12 +172,12 @@ export default function Home() {
     connectAudioContext: connectAudioContext3,
     connectAudioNode: connectAudioNode3,
   } = useAvatar({
-    avatarId: '9bcd4906-2439-441d-af31-f01c31db66a4',
+    avatarId: "9bcd4906-2439-441d-af31-f01c31db66a4",
     // Loader + Plugins
     avatarLoaders: [ThreeJSPlugin],
     scale: 0,
     // Style Props
-    className: 'w-[400px] !h-[400px]',
+    className: "w-[400px] !h-[400px]",
     onAvatarLoaded: () => {
       setInitAvatar3(true);
     },
@@ -242,7 +243,7 @@ export default function Home() {
    * Chatbox scroll
    */
   useEffect(() => {
-    const box = document.getElementById('chatbox');
+    const box = document.getElementById("chatbox");
     if (box) box.scrollTop = box.scrollHeight;
   }, [allMessage, userLoad, assistantLoad]);
 
@@ -252,7 +253,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       if (!audioContextRef.current) return;
-      setAudioStatus('Preparing');
+      setAudioStatus("Preparing");
 
       if (isLoading) return;
       await fetch(
@@ -271,24 +272,24 @@ export default function Home() {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
-        setCharacter1Message({ content: message1, role: 'assistant' });
-        allMessage.push({ content: message1, role: 'assistant' });
+        setCharacter1Message({ content: message1, role: "assistant" });
+        allMessage.push({ content: message1, role: "assistant" });
 
         setAssistantLoad(false);
         setUserLoad(false);
 
-        console.log('Elon Audio Loading ');
+        console.log("Elon Audio Loading ");
 
         connectAudioNode(audioSourceNode);
-        setAudioStatus('Playing');
+        setAudioStatus("Playing");
         audioSourceNode1.current = audioSourceNode;
         audioSourceNode.start();
         // trigger the other character
         append2();
         audioSourceNode.onended = () => {
-          console.log('Elon Audio Ended ');
+          console.log("Elon Audio Ended ");
 
-          setAudioStatus('Ended');
+          setAudioStatus("Ended");
           audioSourceNode1.current = undefined;
 
           if (!start.current) return;
@@ -301,7 +302,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       if (!audioContextRef2.current) return;
-      setAudioStatus2('Preparing');
+      setAudioStatus2("Preparing");
 
       if (isLoading2) return;
       await fetch(
@@ -318,19 +319,19 @@ export default function Home() {
         while (audioSourceNode1.current !== undefined) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        console.log('Sam Audio Loading ');
+        console.log("Sam Audio Loading ");
 
-        setCharacter2Message({ content: message2, role: 'user' });
-        allMessage.push({ content: message2, role: 'user' });
+        setCharacter2Message({ content: message2, role: "user" });
+        allMessage.push({ content: message2, role: "user" });
 
         connectAudioNode2(audioSourceNode);
-        setAudioStatus2('Playing');
+        setAudioStatus2("Playing");
         audioSourceNode2.current = audioSourceNode;
         audioSourceNode.start();
         append();
         audioSourceNode.onended = () => {
-          console.log('Sam Audio Loaded ');
-          setAudioStatus2('Ended');
+          console.log("Sam Audio Loaded ");
+          setAudioStatus2("Ended");
           audioSourceNode2.current = undefined;
           if (!start.current) return;
           // message2
@@ -342,7 +343,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       if (!audioContextRef3.current) return;
-      setAudioStatus3('Preparing');
+      setAudioStatus3("Preparing");
 
       if (isLoading3) return;
       await fetch(
@@ -359,19 +360,19 @@ export default function Home() {
         while (audioSourceNode3.current !== undefined) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        console.log('third one Audio Loading ');
+        console.log("third one Audio Loading ");
 
-        setCharacter3Message({ content: message3, role: 'user' });
-        allMessage.push({ content: message3, role: 'user' });
+        setCharacter3Message({ content: message3, role: "user" });
+        allMessage.push({ content: message3, role: "user" });
 
         connectAudioNode3(audioSourceNode);
-        setAudioStatus3('Playing');
+        setAudioStatus3("Playing");
         audioSourceNode3.current = audioSourceNode;
         audioSourceNode.start();
         append();
         audioSourceNode.onended = () => {
-          console.log('Sam Audio Loaded ');
-          setAudioStatus3('Ended');
+          console.log("Sam Audio Loaded ");
+          setAudioStatus3("Ended");
           audioSourceNode3.current = undefined;
           if (!start.current) return;
           // message2
@@ -387,13 +388,13 @@ export default function Home() {
 
     start.current = true;
 
-    let firstMessage = 'Hey Elon!';
-    setCharacter2Message({ content: firstMessage, role: 'user' });
+    let firstMessage = "Hey Elon!";
+    setCharacter2Message({ content: firstMessage, role: "user" });
 
     // trigger first
     append();
 
-    allMessage.push({ content: firstMessage, role: 'user' });
+    allMessage.push({ content: firstMessage, role: "user" });
     await fetch(
       `/api/tts?voice_id=${process.env.NEXT_PUBLIC_SAM_ALTMAN_VOICE}&text=${firstMessage}`,
     ).then(async (response) => {
@@ -404,10 +405,10 @@ export default function Home() {
       const buffer = await audioContextRef2.current.decodeAudioData(val);
       audioSourceNode.buffer = buffer;
       connectAudioNode2(audioSourceNode);
-      setAudioStatus('Playing');
+      setAudioStatus("Playing");
       audioSourceNode.start();
       audioSourceNode.onended = () => {
-        setAudioStatus('Ended');
+        setAudioStatus("Ended");
         setAssistantLoad(true);
       };
     });
@@ -419,7 +420,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-around p-24 bg-[#111111]">
       <Toaster />
-      
+
       {/* <img
         className="top-0 absolute w-full min-h-screen left-0 object-cover"
         src={
@@ -450,7 +451,7 @@ export default function Home() {
               <>
                 <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
                 <div className="w-full text-opacity-80">
-                  {' '}
+                  {" "}
                   {character1Message.content}
                 </div>
               </>
@@ -466,14 +467,14 @@ export default function Home() {
               <>
                 <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
                 <div className="w-full text-opacity-80">
-                  {' '}
+                  {" "}
                   {character2Message.content}
                 </div>
               </>
             )}
             {userLoad && <Loading />}
           </div>
-          <div className="max-w-[400px] relative">
+        {numberOfAgent == 3 ? <div className="max-w-[400px] relative">
             <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
 
             {avatarDisplay3}
@@ -483,12 +484,13 @@ export default function Home() {
               <>
                 <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
                 <div className="w-full text-opacity-80">
-                  {' '}
+                  {" "}
                   {character3Message.content}
                 </div>
               </>
             )}
-          </div>
+            {steveLoad && <Loading/>}
+          </div> : <div className='w-[400px] relative'></div>}
         </div>
         <div className="w-fit mx-auto flex justify-center flex-col items-center gap-4 ">
           {!started && (
@@ -496,8 +498,8 @@ export default function Home() {
               Start discussion with the topic
               <div className="flex flex-row gap-2">
                 {[
-                  'Sam Altman got fired from OpenAI',
-                  'Sam Altman is getting back to OpenAI',
+                  "Sam Altman got fired from OpenAI",
+                  "Sam Altman is getting back to OpenAI",
                 ].map((x) => (
                   <button
                     className="btn flex w-fit text-md justify-center"
@@ -514,7 +516,7 @@ export default function Home() {
                 <button
                   className="btn"
                   onClick={() =>
-                    (document.getElementById('my_modal_1') as any)?.showModal()
+                    (document.getElementById("my_modal_1") as any)?.showModal()
                   }
                 >
                   Custom
@@ -537,7 +539,7 @@ export default function Home() {
                         onClick={() => {
                           const customPrompt = (
                             document.getElementById(
-                              'custom_prompt_input',
+                              "custom_prompt_input",
                             ) as HTMLInputElement
                           ).value;
                           setTopic(customPrompt);
@@ -566,16 +568,26 @@ export default function Home() {
 
                   setCharacter1Message(undefined);
                   setCharacter2Message(undefined);
-                  setTopic('');
+                  setCharacter3Message(undefined);
+
+                  setTopic("");
                 }}
                 className="btn flex w-fit text-md justify-center"
               >
-                {'Stop'}
+                {"Stop"}
               </button>
             </>
           )}
         </div>
       </div>
+      <button
+        className="btn absolute bottom-24 right-2"
+        onClick={() =>
+          setNumberOfAgent(3)
+        }
+      >
+        New member join the chat
+      </button>
     </main>
   );
 }
@@ -586,7 +598,7 @@ export interface ChatGPTMessage {
 }
 
 const convertNewLines = (text: string) =>
-  text.split('\n').map((line, i) => (
+  text.split("\n").map((line, i) => (
     <span key={i}>
       {line}
       <br />
@@ -594,7 +606,7 @@ const convertNewLines = (text: string) =>
   ));
 
 function ChatLine({
-  role = 'assistant',
+  role = "assistant",
   content,
   aiName,
 }: ChatGPTMessage & {
@@ -605,31 +617,31 @@ function ChatLine({
   }
   const formatteMessage = convertNewLines(content);
 
-  if (role == 'system') return <></>;
+  if (role == "system") return <></>;
 
   return (
     <div
       className={
-        role != 'assistant' ? 'float-right clear-both' : 'float-left clear-both'
+        role != "assistant" ? "float-right clear-both" : "float-left clear-both"
       }
     >
       <div
         className={`float-right mb-5 rounded-lg bg-white px-4 py-2 shadow-lg ring-1 ring-zinc-100 ${
-          role != 'assistant' ? 'ml-24' : 'mr-24'
+          role != "assistant" ? "ml-24" : "mr-24"
         }`}
       >
         <div className="flex space-x-1">
           <div className="flex-1 gap-2">
             <p className="font-large text-xxl text-gray-900">
               <a href="#" className="hover:underline text-sm">
-                {role == 'assistant' ? aiName ?? 'AI' : 'Sam'}
+                {role == "assistant" ? aiName ?? "AI" : "Sam"}
               </a>
             </p>
             <p
               className={`text ${
-                role == 'assistant'
-                  ? 'font-semibold text-black'
-                  : 'text-gray-400'
+                role == "assistant"
+                  ? "font-semibold text-black"
+                  : "text-gray-400"
               }`}
             >
               {formatteMessage}
@@ -644,23 +656,23 @@ function ChatLine({
 const LoadingChatLine = (props: { isUser: boolean }) => (
   <div
     className={
-      props.isUser ? 'float-right clear-both' : 'float-left clear-both'
+      props.isUser ? "float-right clear-both" : "float-left clear-both"
     }
   >
     <div
       className={`float-right mb-5 rounded-lg bg-white px-4 py-2 shadow-lg ring-1 ring-zinc-100 animate-pulse ${
-        props.isUser ? 'ml-8' : 'mr-8'
+        props.isUser ? "ml-8" : "mr-8"
       }`}
     >
       <div className="flex space-x-1">
         <div className="flex-1 gap-2">
           <p className="font-large text-xxl text-gray-900">
             <a href="#" className="hover:underline text-sm">
-              {!props.isUser ? 'Elon' : 'Sam'}
+              {!props.isUser ? "Elon" : "Sam"}
             </a>
           </p>
           <p>
-            <FaEllipsis size={32} color={'black'} />
+            <FaEllipsis size={32} color={"black"} />
           </p>
         </div>
       </div>
