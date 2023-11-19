@@ -16,6 +16,7 @@ import {
   useContextStore,
 } from "./component/useChatWithRebyte";
 import { FaEllipsis } from "react-icons/fa6";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 const GlobleBlendshapeService = new GraphBlendshapesService(nodeConfigs);
 const GlobleBlendshapeService2 = new GraphBlendshapesService(nodeConfigs);
@@ -63,6 +64,8 @@ function Loading() {
 
 export default function Home() {
   const start = useRef(false);
+
+  const {isSignedIn} = useUser()
 
   const audioSourceNode1 = useRef<AudioBufferSourceNode>();
   const audioSourceNode2 = useRef<AudioBufferSourceNode>();
@@ -247,19 +250,22 @@ export default function Home() {
     if (box) box.scrollTop = box.scrollHeight;
   }, [allMessage, userLoad, assistantLoad]);
 
-  function handleAppend(agentId: string) {
-    const opponents = ['1', '2', '3'].filter(id => id !== agentId);
+  function handleAppend(agentId: string, firstMessage?: boolean) {
+    const opponents = (numberOfAgent == 3 ? ['1', '2', '3'] : ['1', '2']).filter(id => id !== agentId);
+    console.log(opponents)
     const opponent = opponents[Math.floor(Math.random() * opponents.length)];
     const opponent2 = opponents.find(id => id !== opponent);
+    console.log(opponent2)
 
     const name_ = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent!) - 1]
     const name = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent2!) - 1]
 
     console.log("Next up: ", name_ + " speak to " + opponent2);
-
-    if(opponent === '1') append(name);
+    if(firstMessage) append('Steve Job')
+    else if(opponent === '1') append(name);
     else if (opponent === '2') append2(name);
     else if (opponent === '3') append3(name);
+    console.log('endappend')
   }
 
   /**
@@ -269,7 +275,7 @@ export default function Home() {
     (async () => {
       if (!audioContextRef.current) return;
       setAudioStatus("Preparing");
-
+      if (!start.current) return;
       if (isLoading) return;
       await fetch(
         `/api/tts?voice_id=${process.env.NEXT_PUBLIC_ELON_MASK_VOICE}&text=${message1}`,
@@ -283,17 +289,17 @@ export default function Home() {
         audioSourceNode.buffer = buffer;
 
         // setUserLoad(true);
-        while (audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
+        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
+          console.log('looping')
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
+        console.log('loopend')
         setCharacter1Message({ content: message1, role: "assistant" });
         allMessage.push({ content: message1, role: "assistant" });
 
         setAssistantLoad(false);
         setUserLoad(false);
-
-        console.log("Elon Audio Loading ");
 
         connectAudioNode(audioSourceNode);
         setAudioStatus("Playing");
@@ -302,12 +308,9 @@ export default function Home() {
         // trigger the other character
         handleAppend("1");
         audioSourceNode.onended = () => {
-          console.log("Elon Audio Ended ");
-
           setAudioStatus("Ended");
           audioSourceNode1.current = undefined;
-
-          if (!start.current) return;
+          
           // message1
         };
       });
@@ -331,11 +334,11 @@ export default function Home() {
         const buffer = await audioContextRef2.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode1.current !== undefined && audioSourceNode3.current !== undefined) {
+        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
+          console.log('looping')
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        console.log("Sam Audio Loading ");
-
+        console.log('loopend')
         setCharacter2Message({ content: message2, role: "user" });
         allMessage.push({ content: message2, role: "user" });
 
@@ -345,7 +348,6 @@ export default function Home() {
         audioSourceNode.start();
         handleAppend("2");
         audioSourceNode.onended = () => {
-          console.log("Sam Audio Loaded ");
           setAudioStatus2("Ended");
           audioSourceNode2.current = undefined;
           if (!start.current) return;
@@ -362,7 +364,7 @@ export default function Home() {
 
       if (isLoading3) return;
       await fetch(
-        `/api/tts?voice_id=${process.env.NEXT_PUBLIC_SAM_ALTMAN_VOICE}&text=${message3}`,
+        `/api/tts?voice_id=${process.env.NEXT_PUBLIC_STEVE_JOBS_VOICE}&text=${message3}`,
       ).then(async (response) => {
         if (!audioContextRef3.current) return;
         // setUserLoad(false);
@@ -372,7 +374,7 @@ export default function Home() {
         const buffer = await audioContextRef3.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined) {
+        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined ) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
         console.log("third one Audio Loading ");
@@ -386,7 +388,6 @@ export default function Home() {
         audioSourceNode.start();
         handleAppend("3");
         audioSourceNode.onended = () => {
-          console.log("Sam Audio Loaded ");
           setAudioStatus3("Ended");
           audioSourceNode3.current = undefined;
           if (!start.current) return;
@@ -407,7 +408,7 @@ export default function Home() {
     setCharacter2Message({ content: firstMessage, role: "user" });
 
     // trigger first
-    append('1');
+    handleAppend("2", true);
 
     allMessage.push({ content: firstMessage, role: "user" });
     await fetch(
@@ -425,6 +426,7 @@ export default function Home() {
       audioSourceNode.onended = () => {
         setAudioStatus("Ended");
         setAssistantLoad(true);
+        audioSourceNode2.current = undefined
       };
     });
   };
@@ -508,7 +510,8 @@ export default function Home() {
           </div>}
         </div>
         <div className="w-fit mx-auto flex justify-center flex-col items-center gap-4 ">
-          {!started && (
+        {!isSignedIn ? <SignInButton><div className='btn flex w-fit text-md justify-center'>Sign in</div></SignInButton> : 
+          !started && (
             <>
               Start discussion with the topic
               <div className="flex flex-row gap-2">
@@ -595,7 +598,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      {numberOfAgent == 2 && (
+      {(numberOfAgent == 2 && isSignedIn) && (
         <button
           className="btn absolute bottom-20 right-6"
           onClick={() => {
