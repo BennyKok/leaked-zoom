@@ -15,7 +15,7 @@ async function message(
   topic: string,
   opponents: string,
   context: string,
-  url: string,
+  url: string
 ) {
   console.log(url);
 
@@ -34,6 +34,18 @@ async function message(
           use_cache: true,
           use_semantic_cache: false,
         },
+        YOU_COM_SEARCH: {
+          input_args: [
+            {
+              name: 'query',
+              type: 'string',
+              required: true,
+              description: 'search query',
+              value: '{{MAP_1}}',
+            },
+          ],
+          use_cache: false,
+        },
         YOU_COM_SEARCH_1: {
           input_args: [
             {
@@ -41,7 +53,7 @@ async function message(
               type: 'string',
               required: true,
               description: 'search query',
-              value: '{{CODE_1.argument}}',
+              value: '{{INPUT.messages[0].topic}}',
             },
           ],
           use_cache: true,
@@ -90,7 +102,7 @@ async function v2(req: Request) {
     agentName = 'Steve Job';
   }
 
-  console.log("Calling ", agentId, topic, opponent, context, url);
+  console.log('Calling ', agentId, topic, opponent, context, url);
   let reply = await (await message(topic, opponent, context, url)).json();
   console.log(reply);
 
