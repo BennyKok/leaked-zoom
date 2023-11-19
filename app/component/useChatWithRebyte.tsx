@@ -38,17 +38,20 @@ export function useChatWithRebyte(agentId?: string) {
 import { create } from 'zustand';
 
 type Store = {
+  contextCount: number;
   context: string;
   topic: string;
   numberOfAgent: number;
   setContext: (context: string) => void;
   setTopic: (topic: string) => void;
   setNumberOfAgent: (numberOfAgent: number) => void;
+  setContextCount: (count: number) => void;
 };
 
 export const useContextStore = create<Store>((set) => ({
   context: '',
   topic: '',
+  contextCount: 0,
   numberOfAgent: 2,
   setTopic: (topic: string) => {
     set({ topic })
@@ -57,15 +60,18 @@ export const useContextStore = create<Store>((set) => ({
     set({ numberOfAgent })
   },
   setContext: (context: string) => {
-    console.log(context);
     set({ context })
   },
+  setContextCount: (count) => {
+    console.log(count)
+    set({contextCount: count})
+  }
 }));
 
 export function useChatWithRebyte2(agentId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState('');
-  const { context, setContext, topic, numberOfAgent } = useContextStore();
+  const { context, setContext, topic, numberOfAgent, contextCount, setContextCount } = useContextStore();
 
   async function chatRebyte(opponent: string) {
     setIsLoading(true);
@@ -84,6 +90,7 @@ export function useChatWithRebyte2(agentId: string) {
 
     let text = res.message;
     setContext(res.context);
+    setContextCount(contextCount + 1)
 
     // const [text] = getAIReplyWithEmotion(
     //   [

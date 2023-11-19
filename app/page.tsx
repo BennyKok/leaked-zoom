@@ -65,13 +65,20 @@ function Loading() {
 export default function Home() {
   const start = useRef(false);
 
-  const {isSignedIn} = useUser()
+  const { isSignedIn } = useUser();
 
   const audioSourceNode1 = useRef<AudioBufferSourceNode>();
   const audioSourceNode2 = useRef<AudioBufferSourceNode>();
   const audioSourceNode3 = useRef<AudioBufferSourceNode>();
 
-  const { setTopic, topic, numberOfAgent, setNumberOfAgent } = useContextStore();
+  const {
+    setTopic,
+    topic,
+    numberOfAgent,
+    setNumberOfAgent,
+    contextCount,
+    setContextCount,
+  } = useContextStore();
 
   const [initAvatar1, setInitAvatar1] = useState(false);
   const [initAvatar2, setInitAvatar2] = useState(false);
@@ -142,7 +149,7 @@ export default function Home() {
     connectAudioNode,
     avatarContext,
   } = useAvatar({
-    avatarId: '303464d1-c107-4720-8049-dc11d03813a9',
+    avatarId: "303464d1-c107-4720-8049-dc11d03813a9",
     // Loader + Plugins
     avatarLoaders: [ThreeJSPlugin],
     scale: 1.22,
@@ -175,7 +182,7 @@ export default function Home() {
     connectAudioContext: connectAudioContext3,
     connectAudioNode: connectAudioNode3,
   } = useAvatar({
-    avatarId: '03094f8a-b866-4701-b2c1-f78bf25d8a65',
+    avatarId: "03094f8a-b866-4701-b2c1-f78bf25d8a65",
     // Loader + Plugins
     avatarLoaders: [ThreeJSPlugin],
     scale: 1.21,
@@ -242,6 +249,13 @@ export default function Home() {
     connectAudioContext3(audioContextRef3.current);
   }, [initAvatar3]);
 
+  useEffect(() => {
+    if (contextCount >= 50) {
+      document.getElementById("stopbutton")?.click();
+      toast("Limited chat count exceeded, stopping the chat.");
+    }
+  }, [contextCount]);
+
   /**
    * Chatbox scroll
    */
@@ -251,21 +265,27 @@ export default function Home() {
   }, [allMessage, userLoad, assistantLoad]);
 
   function handleAppend(agentId: string, firstMessage?: boolean) {
-    const opponents = (numberOfAgent == 3 ? ['1', '2', '3'] : ['1', '2']).filter(id => id !== agentId);
-    console.log(opponents)
+    const opponents = (
+      numberOfAgent == 3 ? ["1", "2", "3"] : ["1", "2"]
+    ).filter((id) => id !== agentId);
     const opponent = opponents[Math.floor(Math.random() * opponents.length)];
-    const opponent2 = opponents.find(id => id !== opponent);
-    console.log(opponent2)
+    let opponent2;
+    if (numberOfAgent != 2) opponent2 = opponents.find((id) => id !== opponent);
+    else opponent2 = agentId;
 
-    const name_ = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent!) - 1]
-    const name = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent2!) - 1]
+    const name_ = ["Elon Musk", "Sam Altman", "Steve Job"][
+      parseInt(opponent!) - 1
+    ];
+    const name = ["Elon Musk", "Sam Altman", "Steve Job"][
+      parseInt(opponent2!) - 1
+    ];
 
     console.log("Next up: ", name_ + " speak to " + opponent2);
-    if(firstMessage) append('Steve Job')
-    else if(opponent === '1') append(name);
-    else if (opponent === '2') append2(name);
-    else if (opponent === '3') append3(name);
-    console.log('endappend')
+    if (firstMessage) append("Sam Altman");
+    else if (opponent === "1") append(name);
+    else if (opponent === "2") append2(name);
+    else if (opponent === "3") append3(name);
+    console.log("endappend");
   }
 
   /**
@@ -289,12 +309,14 @@ export default function Home() {
         audioSourceNode.buffer = buffer;
 
         // setUserLoad(true);
-        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
-          console.log('looping')
+        while (
+          audioSourceNode1.current !== undefined ||
+          audioSourceNode2.current !== undefined ||
+          audioSourceNode3.current !== undefined
+        ) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
-        console.log('loopend')
         setCharacter1Message({ content: message1, role: "assistant" });
         allMessage.push({ content: message1, role: "assistant" });
 
@@ -310,7 +332,7 @@ export default function Home() {
         audioSourceNode.onended = () => {
           setAudioStatus("Ended");
           audioSourceNode1.current = undefined;
-          
+
           // message1
         };
       });
@@ -321,7 +343,7 @@ export default function Home() {
     (async () => {
       if (!audioContextRef2.current) return;
       setAudioStatus2("Preparing");
-
+      if (!start.current) return;
       if (isLoading2) return;
       await fetch(
         `/api/tts?voice_id=${process.env.NEXT_PUBLIC_SAM_ALTMAN_VOICE}&text=${message2}`,
@@ -334,11 +356,13 @@ export default function Home() {
         const buffer = await audioContextRef2.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
-          console.log('looping')
+        while (
+          audioSourceNode1.current !== undefined ||
+          audioSourceNode2.current !== undefined ||
+          audioSourceNode3.current !== undefined
+        ) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        console.log('loopend')
         setCharacter2Message({ content: message2, role: "user" });
         allMessage.push({ content: message2, role: "user" });
 
@@ -350,7 +374,7 @@ export default function Home() {
         audioSourceNode.onended = () => {
           setAudioStatus2("Ended");
           audioSourceNode2.current = undefined;
-          if (!start.current) return;
+
           // message2
         };
       });
@@ -361,7 +385,7 @@ export default function Home() {
     (async () => {
       if (!audioContextRef3.current) return;
       setAudioStatus3("Preparing");
-
+      if (!start.current) return;
       if (isLoading3) return;
       await fetch(
         `/api/tts?voice_id=${process.env.NEXT_PUBLIC_STEVE_JOBS_VOICE}&text=${message3}`,
@@ -374,11 +398,13 @@ export default function Home() {
         const buffer = await audioContextRef3.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined ) {
+        while (
+          audioSourceNode1.current !== undefined ||
+          audioSourceNode2.current !== undefined ||
+          audioSourceNode3.current !== undefined
+        ) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
-        console.log("third one Audio Loading ");
-
         setCharacter3Message({ content: message3, role: "user" });
         allMessage.push({ content: message3, role: "user" });
 
@@ -426,7 +452,7 @@ export default function Home() {
       audioSourceNode.onended = () => {
         setAudioStatus("Ended");
         setAssistantLoad(true);
-        audioSourceNode2.current = undefined
+        audioSourceNode2.current = undefined;
       };
     });
   };
@@ -491,86 +517,97 @@ export default function Home() {
             )}
             {userLoad && <Loading />}
           </div>
-        {numberOfAgent == 3 && <div className="max-w-[400px] relative">
-            <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
+          {numberOfAgent == 3 && (
+            <div className="max-w-[400px] relative">
+              <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
 
-            {avatarDisplay3}
-            <div className="w-full mt-2">Steve</div>
+              {avatarDisplay3}
+              <div className="w-full mt-2">Steve</div>
 
-            {character3Message && (
-              <>
-                <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
-                <div className="w-full text-opacity-80">
-                  {" "}
-                  {character3Message.content}
-                </div>
-              </>
-            )}
-            {steveLoad && <Loading/>}
-          </div>}
+              {character3Message && (
+                <>
+                  <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
+                  <div className="w-full text-opacity-80">
+                    {" "}
+                    {character3Message.content}
+                  </div>
+                </>
+              )}
+              {steveLoad && <Loading />}
+            </div>
+          )}
         </div>
         <div className="w-fit mx-auto flex justify-center flex-col items-center gap-4 ">
-        {!isSignedIn ? <SignInButton><div className='btn flex w-fit text-md justify-center'>Sign in</div></SignInButton> : 
-          !started && (
-            <>
-              Start discussion with the topic
-              <div className="flex flex-row gap-2">
-                {[
-                  "Sam Altman got fired from OpenAI",
-                  "Sam Altman is getting back to OpenAI",
-                ].map((x) => (
-                  <button
-                    className="btn flex w-fit text-md justify-center"
-                    key={x}
-                    onClick={() => {
-                      setTopic(x);
-                      triggerNewChat();
-                    }}
-                  >
-                    {x}
-                  </button>
-                ))}
-
-                <button
-                  className="btn"
-                  onClick={() =>
-                    (document.getElementById("my_modal_1") as any)?.showModal()
-                  }
-                >
-                  Custom
-                </button>
-                <dialog id="my_modal_1" className="modal text-black">
-                  <div className="modal-box">
-                    <h3 className="font-bold text-lg ">Custom Prompt</h3>
-                    <input
-                      id="custom_prompt_input"
-                      type="text"
-                      className="input w-full mt-2"
-                      placeholder="Enter your text here"
-                    />
-                    <div className="modal-action">
-                      <form method="dialog">
-                        <button className="btn">Close</button>
-                      </form>
-                      <button
-                        className="btn"
-                        onClick={() => {
-                          const customPrompt = (
-                            document.getElementById(
-                              "custom_prompt_input",
-                            ) as HTMLInputElement
-                          ).value;
-                          setTopic(customPrompt);
-                          triggerNewChat();
-                        }}
-                      >
-                        Confirm
-                      </button>
-                    </div>
-                  </div>
-                </dialog>
+          {!isSignedIn ? (
+            <SignInButton>
+              <div className="btn flex w-fit text-md justify-center">
+                Sign in
               </div>
-            </>
+            </SignInButton>
+          ) : (
+            !started && (
+              <>
+                Start discussion with the topic
+                <div className="flex flex-row gap-2">
+                  {[
+                    "Sam Altman got fired from OpenAI",
+                    "Sam Altman is getting back to OpenAI",
+                  ].map((x) => (
+                    <button
+                      className="btn flex w-fit text-md justify-center"
+                      key={x}
+                      onClick={() => {
+                        setTopic(x);
+                        triggerNewChat();
+                      }}
+                    >
+                      {x}
+                    </button>
+                  ))}
+
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      (
+                        document.getElementById("my_modal_1") as any
+                      )?.showModal()
+                    }
+                  >
+                    Custom
+                  </button>
+                  <dialog id="my_modal_1" className="modal text-black">
+                    <div className="modal-box">
+                      <h3 className="font-bold text-lg ">Custom Prompt</h3>
+                      <input
+                        id="custom_prompt_input"
+                        type="text"
+                        className="input w-full mt-2"
+                        placeholder="Enter your text here"
+                      />
+                      <div className="modal-action">
+                        <form method="dialog">
+                          <button className="btn">Close</button>
+                        </form>
+                        <button
+                          className="btn"
+                          onClick={() => {
+                            const customPrompt = (
+                              document.getElementById(
+                                "custom_prompt_input",
+                              ) as HTMLInputElement
+                            ).value;
+                            setTopic(customPrompt);
+                            triggerNewChat();
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    </div>
+                  </dialog>
+                </div>
+              </>
+            )
           )}
           {started && (
             <>
@@ -589,8 +626,10 @@ export default function Home() {
                   setCharacter3Message(undefined);
 
                   setTopic("");
+                  setContextCount(0);
                 }}
                 className="btn flex w-fit text-md justify-center"
+                id={"stopbutton"}
               >
                 {"Stop"}
               </button>
@@ -598,7 +637,7 @@ export default function Home() {
           )}
         </div>
       </div>
-      {(numberOfAgent == 2 && isSignedIn) && (
+      {numberOfAgent == 2 && isSignedIn && (
         <button
           className="btn absolute bottom-20 right-6"
           onClick={() => {
@@ -702,14 +741,15 @@ const LoadingChatLine = (props: { isUser: boolean }) => (
 );
 
 function getOpponentName(agentId: string, numberOfAgent: number) {
-  const opponents = ['Elon Musk', 'Sam Altman', 'Steve Job'];
-  const id = Math.floor(Math.random() * opponents.length)
-  let opponent = '';
+  const opponents = ["Elon Musk", "Sam Altman", "Steve Job"];
+  const id = Math.floor(Math.random() * opponents.length);
+  let opponent = "";
   if (numberOfAgent === 2) {
-    opponent = agentId === '1' ? 'Sam Altman' : 'Elon Musk';
+    opponent = agentId === "1" ? "Sam Altman" : "Elon Musk";
   } else if (numberOfAgent === 3) {
-    while(agentId != id.toString()){
-      opponent = opponents[Math.floor(Math.random() * opponents.length)];}
+    while (agentId != id.toString()) {
+      opponent = opponents[Math.floor(Math.random() * opponents.length)];
+    }
   }
   return opponent;
 }
