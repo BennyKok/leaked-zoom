@@ -4,7 +4,7 @@ Leaked Zoom: Eavesdrop the hottest tech topics from famous people in a Zoom call
 
 ![image](https://github.com/BennyKok/leak-zoom/assets/5101573/125cbc39-f1df-4bda-b1ac-11c1bb763ba0)
 
-Powered by [Avatech](https://avatech.ai/), [Rebyte](https://rebyte.ai/) and [You.com](https://api.you.com/)
+Powered by [Avatech](https://labs.avatech.ai/), [Rebyte](https://rebyte.ai/) and [You.com](https://api.you.com/)
 
 <img width="839" alt="image" src="https://github.com/BennyKok/leak-zoom/assets/5101573/7f6ee187-2fc8-4ef2-87e7-68b7c2c4037f">
 
