@@ -440,7 +440,7 @@ export default function Home() {
       ></img>
 
       <div className="z-10 w-full h-full flex flex-col gap-4">
-        <div className="w-full justify-between flex flex-row mx-auto">
+        <div className="w-full justify-around flex flex-row mx-auto">
           <div className="max-w-[400px] relative">
             <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
 
@@ -474,7 +474,7 @@ export default function Home() {
             )}
             {userLoad && <Loading />}
           </div>
-        {numberOfAgent == 3 ? <div className="max-w-[400px] relative">
+        {numberOfAgent == 3 && <div className="max-w-[400px] relative">
             <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
 
             {avatarDisplay3}
@@ -490,7 +490,7 @@ export default function Home() {
               </>
             )}
             {steveLoad && <Loading/>}
-          </div> : <div className='w-[400px] relative'></div>}
+          </div>}
         </div>
         <div className="w-fit mx-auto flex justify-center flex-col items-center gap-4 ">
           {!started && (
