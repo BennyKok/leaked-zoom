@@ -22,7 +22,7 @@ async function message(
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      Authorization: 'Bearer ' + process.env.REBYTE_API_KEY,
+      Authorization: 'Bearer ' + process.env.REBYATE_API,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
