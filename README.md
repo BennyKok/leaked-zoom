@@ -1,6 +1,9 @@
+Leaked Zoom: Eardrop the hotest topics from famous people in a Zoom call
+---
+
 <img width="839" alt="image" src="https://github.com/BennyKok/leak-zoom/assets/5101573/7f6ee187-2fc8-4ef2-87e7-68b7c2c4037f">
 
-Powered by [Avatech](https://avatech.ai/) and [Rebyte](https://rebyte.ai/).
+Powered by [Avatech](https://avatech.ai/), [Rebyte](https://rebyte.ai/) and [You.com](https://api.you.com/)
 
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
