@@ -90,7 +90,7 @@ async function v2(req: Request) {
     agentName = 'Steve Job';
   }
 
-  console.log(agentId, topic, opponent, context, url);
+  console.log("Calling ", agentId, topic, opponent, context, url);
   let reply = await (await message(topic, opponent, context, url)).json();
   console.log(reply);
 

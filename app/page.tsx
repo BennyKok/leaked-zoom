@@ -248,11 +248,18 @@ export default function Home() {
   }, [allMessage, userLoad, assistantLoad]);
 
   function handleAppend(agentId: string) {
-    const opponent = ['1', '2', '3'].find(id => id !== agentId);
+    const opponents = ['1', '2', '3'].filter(id => id !== agentId);
+    const opponent = opponents[Math.floor(Math.random() * opponents.length)];
+    const opponent2 = opponents.find(id => id !== opponent);
 
-    if(opponent === '1') append('Elon Musk');
-    else if (opponent === '2') append2('Sam Altman');
-    else if (opponent === '3') append3('Steve Job');
+    const name_ = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent!) - 1]
+    const name = ['Elon Musk', 'Sam Altman', 'Steve Job'][parseInt(opponent2!) - 1]
+
+    console.log("Next up: ", name_ + " speak to " + opponent2);
+
+    if(opponent === '1') append(name);
+    else if (opponent === '2') append2(name);
+    else if (opponent === '3') append3(name);
   }
 
   /**
@@ -387,7 +394,7 @@ export default function Home() {
         };
       });
     })();
-  }, [message2, isLoading2]);
+  }, [message3, isLoading3]);
 
   const [started, setStarted] = useState(false);
 
