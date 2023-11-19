@@ -172,10 +172,10 @@ export default function Home() {
     connectAudioContext: connectAudioContext3,
     connectAudioNode: connectAudioNode3,
   } = useAvatar({
-    avatarId: "9bcd4906-2439-441d-af31-f01c31db66a4",
+    avatarId: '03094f8a-b866-4701-b2c1-f78bf25d8a65',
     // Loader + Plugins
     avatarLoaders: [ThreeJSPlugin],
-    scale: 0,
+    scale: 1.21,
     // Style Props
     className: "w-[400px] !h-[400px]",
     onAvatarLoaded: () => {
