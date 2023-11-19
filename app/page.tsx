@@ -1,4 +1,5 @@
 'use client';
+import { Toaster, toast } from 'sonner';
 
 import { Message, useChat } from 'ai/react';
 import { getAIReplyWithEmotion, useAvatar } from '@avatechai/avatars/react';
@@ -67,7 +68,6 @@ export default function Home() {
   const audioSourceNode2 = useRef<AudioBufferSourceNode>();
   const audioSourceNode3 = useRef<AudioBufferSourceNode>();
 
-
   const { setTopic, topic } = useContextStore();
 
   const [initAvatar1, setInitAvatar1] = useState(false);
@@ -85,8 +85,8 @@ export default function Home() {
     'Preparing' | 'Playing' | 'Ended'
   >('Ended');
   const [audioStatus3, setAudioStatus3] = useState<
-  'Preparing' | 'Playing' | 'Ended'
->('Ended');
+    'Preparing' | 'Playing' | 'Ended'
+  >('Ended');
 
   const [userLoad, setUserLoad] = useState(false);
   const [assistantLoad, setAssistantLoad] = useState(false);
@@ -117,7 +117,6 @@ export default function Home() {
   // }
   const [character2Message, setCharacter2Message] = useState<ChatGPTMessage>();
   const [character3Message, setCharacter3Message] = useState<ChatGPTMessage>();
-
 
   // const { messages, isLoading, append } = useChat();
 
@@ -419,6 +418,8 @@ export default function Home() {
    */
   return (
     <main className="flex min-h-screen items-center justify-around p-24 bg-[#111111]">
+      <Toaster />
+      
       {/* <img
         className="top-0 absolute w-full min-h-screen left-0 object-cover"
         src={
@@ -438,7 +439,7 @@ export default function Home() {
       ></img>
 
       <div className="z-10 w-full h-full flex flex-col gap-4">
-        <div className="w-full max-w-4xl justify-between flex flex-row mx-auto">
+        <div className="w-full justify-between flex flex-row mx-auto">
           <div className="max-w-[400px] relative">
             <div className="absolute bg-[#111111] w-full h-[5px] top-0 left-0 z-10"></div>
 
@@ -481,7 +482,10 @@ export default function Home() {
             {character3Message && (
               <>
                 <div className="bg-white/20 h-[1px] mx-0 my-2"></div>
-                <div className="w-full text-opacity-80"> {character3Message.content}</div>
+                <div className="w-full text-opacity-80">
+                  {' '}
+                  {character3Message.content}
+                </div>
               </>
             )}
           </div>

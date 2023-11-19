@@ -9,6 +9,7 @@ export async function POST(req: Request) {
 
 let sam_url = process.env.SAM_URL!;
 let elon_url = process.env.ELON_URL!;
+let steve_url = process.env.STEVE_URL!;
 
 async function message(
   topic: string,
@@ -70,12 +71,21 @@ async function message(
 }
 
 async function v2(req: Request) {
-  let { context, agentId, topic } = await req.json();
+  let { context, agentId, topic, numberOfAgent } = await req.json();
 
   if (!topic) topic = 'Sam Altman got fired from OpenAI';
+  if (numberOfAgent === undefined) numberOfAgent = 2;
 
-  // let context = messages;
-  // const sam_reply = 'Sam: ' + 'Hello, Elon. How are you?';
+  function getOpponentName(agentId: string, numberOfAgent: number) {
+    let opponent = '';
+    if (numberOfAgent === 2) {
+      opponent = agentId === '1' ? 'Sam Altman' : 'Elon Musk';
+    } else if (numberOfAgent === 3) {
+      const opponents = ['Elon Musk', 'Sam Altman', 'Steve Job'];
+      opponent = opponents[Math.floor(Math.random() * opponents.length)];
+    }
+    return opponent;
+  }
 
   let url = '';
   let agentName = '';
@@ -84,12 +94,15 @@ async function v2(req: Request) {
   if (agentId === '1') {
     url = elon_url;
     agentName = 'Elon Musk';
-    opponent = 'Sam Altman';
   } else if (agentId === '2') {
     url = sam_url;
     agentName = 'Sam Altman';
-    opponent = 'Elon Musk';
+  } else if (agentId === '3') {
+    url = steve_url;
+    agentName = 'Steve Job';
   }
+
+  opponent = getOpponentName(agentId, numberOfAgent);
 
   console.log(agentId, topic, opponent, context, url);
   let reply = await (await message(topic, opponent, context, url)).json();
