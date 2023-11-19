@@ -1,4 +1,4 @@
-Leaked Zoom: Eardrop the hotest topics from famous people in a Zoom call
+Leaked Zoom: Eavesdrop the hottest tech topics from famous people in a Zoom call
 ---
 
 
