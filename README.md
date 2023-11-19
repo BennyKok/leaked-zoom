@@ -9,6 +9,7 @@ Powered by [Avatech](https://avatech.ai/), [Rebyte](https://rebyte.ai/) and [You
 <img width="839" alt="image" src="https://github.com/BennyKok/leak-zoom/assets/5101573/7f6ee187-2fc8-4ef2-87e7-68b7c2c4037f">
 
 
+<img width="1710" alt="image" src="https://github.com/BennyKok/leak-zoom/assets/5101573/7f7811bc-16f1-49da-b397-188d2ecb350b">
 
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
