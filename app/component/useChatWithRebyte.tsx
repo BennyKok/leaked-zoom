@@ -40,15 +40,21 @@ import { create } from 'zustand';
 type Store = {
   context: string;
   topic: string;
+  numberOfAgent: number;
   setContext: (context: string) => void;
   setTopic: (topic: string) => void;
+  setNumberOfAgent: (numberOfAgent: number) => void;
 };
 
 export const useContextStore = create<Store>((set) => ({
   context: '',
   topic: '',
+  numberOfAgent: 2,
   setTopic: (topic: string) => {
     set({ topic })
+  },
+  setNumberOfAgent: (numberOfAgent: number) => {
+    set({ numberOfAgent })
   },
   setContext: (context: string) => {
     console.log(context);
@@ -59,7 +65,7 @@ export const useContextStore = create<Store>((set) => ({
 export function useChatWithRebyte2(agentId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState('');
-  const { context, setContext, topic } = useContextStore();
+  const { context, setContext, topic, numberOfAgent } = useContextStore();
 
   async function chatRebyte() {
     setIsLoading(true);
@@ -69,6 +75,7 @@ export function useChatWithRebyte2(agentId: string) {
       body: JSON.stringify({
         agentId,
         topic,
+        numberOfAgent,
         // text: message,
         context: context,
       }),
