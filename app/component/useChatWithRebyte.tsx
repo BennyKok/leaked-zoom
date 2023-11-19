@@ -67,7 +67,7 @@ export function useChatWithRebyte2(agentId: string) {
   const [text, setText] = useState('');
   const { context, setContext, topic, numberOfAgent } = useContextStore();
 
-  async function chatRebyte() {
+  async function chatRebyte(opponent: string) {
     setIsLoading(true);
 
     const res = await fetch('/api/rebyte', {
@@ -76,6 +76,7 @@ export function useChatWithRebyte2(agentId: string) {
         agentId,
         topic,
         numberOfAgent,
+        opponent,
         // text: message,
         context: context,
       }),

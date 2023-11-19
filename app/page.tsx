@@ -285,7 +285,9 @@ export default function Home() {
         audioSourceNode1.current = audioSourceNode;
         audioSourceNode.start();
         // trigger the other character
-        append2();
+        const opponent = getOpponentName('3', numberOfAgent)
+        if(opponent == '2') append2(opponent);
+        else if (opponent == '3') append3(opponent);
         audioSourceNode.onended = () => {
           console.log("Elon Audio Ended ");
 
@@ -328,7 +330,9 @@ export default function Home() {
         setAudioStatus2("Playing");
         audioSourceNode2.current = audioSourceNode;
         audioSourceNode.start();
-        append();
+        const opponent = getOpponentName('3', numberOfAgent)
+        if(opponent == '1') append(opponent);
+        else if (opponent == '3') append3(opponent);
         audioSourceNode.onended = () => {
           console.log("Sam Audio Loaded ");
           setAudioStatus2("Ended");
@@ -369,7 +373,9 @@ export default function Home() {
         setAudioStatus3("Playing");
         audioSourceNode3.current = audioSourceNode;
         audioSourceNode.start();
-        append();
+        const opponent = getOpponentName('3', numberOfAgent)
+        if(opponent == '1') append(opponent);
+        else if (opponent == '2') append2(opponent);
         audioSourceNode.onended = () => {
           console.log("Sam Audio Loaded ");
           setAudioStatus3("Ended");
@@ -392,7 +398,7 @@ export default function Home() {
     setCharacter2Message({ content: firstMessage, role: "user" });
 
     // trigger first
-    append();
+    append('1');
 
     allMessage.push({ content: firstMessage, role: "user" });
     await fetch(
@@ -682,3 +688,16 @@ const LoadingChatLine = (props: { isUser: boolean }) => (
     </div>
   </div>
 );
+
+function getOpponentName(agentId: string, numberOfAgent: number) {
+  const opponents = ['Elon Musk', 'Sam Altman', 'Steve Job'];
+  const id = Math.floor(Math.random() * opponents.length)
+  let opponent = '';
+  if (numberOfAgent === 2) {
+    opponent = agentId === '1' ? 'Sam Altman' : 'Elon Musk';
+  } else if (numberOfAgent === 3) {
+    while(agentId != id.toString()){
+      opponent = opponents[Math.floor(Math.random() * opponents.length)];}
+  }
+  return opponent;
+}
