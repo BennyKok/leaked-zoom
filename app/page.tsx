@@ -580,14 +580,17 @@ export default function Home() {
           )}
         </div>
       </div>
-      <button
-        className="btn absolute bottom-24 right-2"
-        onClick={() =>
-          setNumberOfAgent(3)
-        }
-      >
-        New member join the chat
-      </button>
+      {numberOfAgent == 2 && (
+        <button
+          className="btn absolute bottom-20 right-6"
+          onClick={() => {
+            setNumberOfAgent(3);
+            toast("You've added a special guest!");
+          }}
+        >
+          Add special guest
+        </button>
+      )}
     </main>
   );
 }
