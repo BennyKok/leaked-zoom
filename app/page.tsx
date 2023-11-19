@@ -247,6 +247,14 @@ export default function Home() {
     if (box) box.scrollTop = box.scrollHeight;
   }, [allMessage, userLoad, assistantLoad]);
 
+  function handleAppend(agentId: string) {
+    const opponent = ['1', '2', '3'].find(id => id !== agentId);
+
+    if(opponent === '1') append('Elon Musk');
+    else if (opponent === '2') append2('Sam Altman');
+    else if (opponent === '3') append3('Steve Job');
+  }
+
   /**
    * Audio Play
    */
@@ -268,7 +276,7 @@ export default function Home() {
         audioSourceNode.buffer = buffer;
 
         // setUserLoad(true);
-        while (audioSourceNode2.current !== undefined) {
+        while (audioSourceNode2.current !== undefined && audioSourceNode3.current !== undefined) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
@@ -285,9 +293,7 @@ export default function Home() {
         audioSourceNode1.current = audioSourceNode;
         audioSourceNode.start();
         // trigger the other character
-        const opponent = getOpponentName('3', numberOfAgent)
-        if(opponent == '2') append2(opponent);
-        else if (opponent == '3') append3(opponent);
+        handleAppend("1");
         audioSourceNode.onended = () => {
           console.log("Elon Audio Ended ");
 
@@ -318,7 +324,7 @@ export default function Home() {
         const buffer = await audioContextRef2.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode1.current !== undefined) {
+        while (audioSourceNode1.current !== undefined && audioSourceNode3.current !== undefined) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
         console.log("Sam Audio Loading ");
@@ -330,9 +336,7 @@ export default function Home() {
         setAudioStatus2("Playing");
         audioSourceNode2.current = audioSourceNode;
         audioSourceNode.start();
-        const opponent = getOpponentName('3', numberOfAgent)
-        if(opponent == '1') append(opponent);
-        else if (opponent == '3') append3(opponent);
+        handleAppend("2");
         audioSourceNode.onended = () => {
           console.log("Sam Audio Loaded ");
           setAudioStatus2("Ended");
@@ -361,7 +365,7 @@ export default function Home() {
         const buffer = await audioContextRef3.current.decodeAudioData(val);
         audioSourceNode.buffer = buffer;
 
-        while (audioSourceNode3.current !== undefined) {
+        while (audioSourceNode1.current !== undefined && audioSourceNode2.current !== undefined) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
         console.log("third one Audio Loading ");
@@ -373,9 +377,7 @@ export default function Home() {
         setAudioStatus3("Playing");
         audioSourceNode3.current = audioSourceNode;
         audioSourceNode.start();
-        const opponent = getOpponentName('3', numberOfAgent)
-        if(opponent == '1') append(opponent);
-        else if (opponent == '2') append2(opponent);
+        handleAppend("3");
         audioSourceNode.onended = () => {
           console.log("Sam Audio Loaded ");
           setAudioStatus3("Ended");
